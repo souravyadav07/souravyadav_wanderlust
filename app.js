@@ -22,13 +22,28 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/reviews.js");
 const userRouter = require("./routes/user.js");
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "public")));  //fixed
+
+
+app.get("/", (req, res) => {                // fixed
+  res.send("Welcome to Wanderlust!");
+});
+
 // const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const dbUrl = process.env.ATLASDB_URL;
+
+// Make currUser available in all EJS templates
+app.use((req, res, next) => {
+  res.locals.currUser = req.user || null;
+  next();
+});
 
 async function main() {
   // await mongoose.connect(MONGO_URL);
   await mongoose.connect(dbUrl);
 }
+
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -64,6 +79,7 @@ const sessionOptions = {
 // app.get("/", (req, res) => {
 //   res.send("Hi I am root");
 // });
+
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -127,6 +143,10 @@ app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong!" } = err;
   res.status(statusCode).render("error.ejs", { message });
   // res.status(statusCode).send(message);
+});
+
+app.use((req, res) => {
+  res.status(404).send("Page Not Found"); // fixed
 });
 
 app.listen(8080, () => {
