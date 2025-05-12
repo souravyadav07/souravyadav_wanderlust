@@ -22,10 +22,6 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/reviews.js");
 const userRouter = require("./routes/user.js");
 
-const path = require("path");
-app.use(express.static(path.join(__dirname, "public")));  //fixed
-
-
 app.get("/", (req, res) => {                // fixed
   res.send("Welcome to Wanderlust!");
 });
